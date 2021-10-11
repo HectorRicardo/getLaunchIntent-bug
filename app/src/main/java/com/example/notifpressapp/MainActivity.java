@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
   /** Create the intent that will be run when the notification is pressed */
   private PendingIntent createNotificationIntent() {
     Intent intent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+    intent.setPackage(null);
     int pendingIntentFlags = VERSION.SDK_INT < VERSION_CODES.M ? 0 : PendingIntent.FLAG_IMMUTABLE;
     return PendingIntent.getActivity(this, 0, intent, pendingIntentFlags);
   }
