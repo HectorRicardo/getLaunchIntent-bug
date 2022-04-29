@@ -1,6 +1,6 @@
 # What is this?
 
-This minimal reproducible example shows that the method [`PackageManager.getLaunchIntentForPackage(packageName)`](https://developer.android.com/reference/android/content/pm/PackageManager#getLaunchIntentForPackage(java.lang.String)) is buggy. We need to call [`setPackage(null)`]() on the intent returned to make it work correctly.
+This minimal reproducible example shows that, for Android 10, the method [`PackageManager.getLaunchIntentForPackage(packageName)`](https://developer.android.com/reference/android/content/pm/PackageManager#getLaunchIntentForPackage(java.lang.String)) is buggy. We need to call [`setPackage(null)`]() on the intent returned to make it work correctly.
 
 # Conceptual explanation of the Minimal Reproducible Example:
 
@@ -9,7 +9,7 @@ We have 2 activities:
 1. **Splash Activity**: functions as a splash screen. It loads the app (we just simulate by waiting for 1.5 seconds). After loading finishes, we redirect the user to the Main Activity (via `startActivity(Intent)`). Then we call `finish()` on the Splash Activity itself.
 2. **Main Activity**: It just posts a notification. Whenever you press the notification, the app should come to the foreground. In other words, it should work exactly as a launcher icon. This is a clear indication that we need to use `PackageManager.getLaunchIntentForPackage(getPackageName())`.
 
-*(Note: this app targets API Level 30, so we can't leverage the SplashScreen APIs. But that is irrelevant. I'm just using a Splash Screen to make the scenario easier to understand).*
+*(Note: since this bug happens only on Android 10, we can't leverage the SplashScreen APIs. But that is irrelevant. The general scenario is when there are two activities and the notification is only supposed to open the current (last) activity. The bug is that it opens the **first** activity. A splash screen is only a specific example of this general scenario).*
 
 To clarify the expected behavior: Assume we already got past the `SplashActivity` and we are now in the `MainActivity`. Then we minimize the app by pressing the Home button (not the Back Button!). Then we press on the app's launcher icon. The app opens again where we left off (that is, on `MainActivity` ... notice that the `SplashActivity` didn't show).
 
